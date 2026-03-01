@@ -110,17 +110,17 @@ function Header({ scrollY }: HeaderProps) {
   const links: [string, string][] = [["Philosophy","#philosophy"],["What We Invest In","#focus"],["Track Record","#track"],["Approach","#approach"],["Investor Relations","#investors"]];
   return (
     <header style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 100, transition: "background 0.4s ease", background: pinned ? "rgba(10,10,10,0.92)" : "transparent", backdropFilter: pinned ? "blur(12px)" : "none", borderBottom: pinned ? "1px solid rgba(255,255,255,0.06)" : "1px solid transparent" }}>
-      <div style={{ maxWidth: 1320, margin: "0 auto", padding: "0 40px", height: pinned ? 68 : 88, display: "flex", alignItems: "center", justifyContent: "space-between", transition: "height 0.4s ease" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-          <div style={{ width: 40, height: 40, border: "1px solid rgba(255,255,255,0.5)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Cormorant Garamond',Georgia,serif", fontSize: 15, fontWeight: 600, letterSpacing: "0.05em", color: "#fff" }}>DS</div>
+      <div style={{ maxWidth: 1320, margin: "0 auto", padding: "0 24px", height: pinned ? 64 : 80, display: "flex", alignItems: "center", justifyContent: "space-between", transition: "height 0.4s ease" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <div style={{ width: 36, height: 36, border: "1px solid rgba(255,255,255,0.5)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Cormorant Garamond',Georgia,serif", fontSize: 13, fontWeight: 600, letterSpacing: "0.05em", color: "#fff", flexShrink: 0 }}>DS</div>
           <div>
-            <div style={{ fontFamily: "'Cormorant Garamond',Georgia,serif", fontSize: 16, fontWeight: 600, letterSpacing: "0.18em", color: "#fff", lineHeight: 1 }}>DUKE STREET</div>
-            <div style={{ fontFamily: "'Cormorant Garamond',Georgia,serif", fontSize: 10, letterSpacing: "0.32em", color: "rgba(255,255,255,0.45)", marginTop: 2 }}>VENTURES</div>
+            <div style={{ fontFamily: "'Cormorant Garamond',Georgia,serif", fontSize: 14, fontWeight: 600, letterSpacing: "0.18em", color: "#fff", lineHeight: 1 }}>DUKE STREET</div>
+            <div style={{ fontFamily: "'Cormorant Garamond',Georgia,serif", fontSize: 9, letterSpacing: "0.32em", color: "rgba(255,255,255,0.45)", marginTop: 2 }}>VENTURES</div>
           </div>
         </div>
-        <nav className="dsv-nav" style={{ display: "flex", gap: 36 }}>
+        <nav className="dsv-nav" style={{ display: "flex", gap: 28 }}>
           {links.map(([label, href]) => (
-            <a key={label} href={href} style={{ fontFamily: "'DM Sans',sans-serif", fontSize: 12, letterSpacing: "0.1em", color: "rgba(255,255,255,0.55)", textDecoration: "none", textTransform: "uppercase" as const, transition: "color 0.2s" }}
+            <a key={label} href={href} style={{ fontFamily: "'DM Sans',sans-serif", fontSize: 11, letterSpacing: "0.1em", color: "rgba(255,255,255,0.55)", textDecoration: "none", textTransform: "uppercase" as const, transition: "color 0.2s" }}
               onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = "#fff"; }}
               onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = "rgba(255,255,255,0.55)"; }}
             >{label}</a>
@@ -132,18 +132,12 @@ function Header({ scrollY }: HeaderProps) {
 }
 
 const T = { serif: "'Cormorant Garamond',Georgia,serif", sans: "'DM Sans',sans-serif", mono: "'DM Mono',monospace", cream: "#F5F2EC", ink: "#0E0E0E", mid: "#6B6B6B", border: "rgba(0,0,0,0.1)" };
-
-function Rule() {
-  return <div style={{ width: 48, height: 1, background: "rgba(255,255,255,0.2)", margin: "40px 0" }} />;
-}
-
-function DarkRule() {
-  return <div style={{ width: 48, height: 1, background: "rgba(0,0,0,0.15)", margin: "40px 0" }} />;
-}
+const SP = "clamp(60px, 10vw, 120px) clamp(20px, 5vw, 40px)"; // responsive section padding
 
 function Label({ children, light = false }: { children: React.ReactNode; light?: boolean }) {
   return <div style={{ fontFamily: T.mono, fontSize: 10, letterSpacing: "0.28em", color: light ? "rgba(245,242,236,0.35)" : T.mid, textTransform: "uppercase", marginBottom: 24 }}>{children}</div>;
 }
+function DarkRule() { return <div style={{ width: 40, height: 1, background: "rgba(0,0,0,0.15)", margin: "36px 0" }} />; }
 
 export default function DukeStreetVentures() {
   const [scrollY, setScrollY] = useState(0);
@@ -155,17 +149,38 @@ export default function DukeStreetVentures() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const fi = (d: number): React.CSSProperties => !mounted ? {} : ({
-    animation: `fadeUp 0.9s cubic-bezier(0.16,1,0.3,1) ${d}s both`,
-  });
+  const fi = (d: number): React.CSSProperties => !mounted ? {} : ({ animation: `fadeUp 0.9s cubic-bezier(0.16,1,0.3,1) ${d}s both` });
 
   return (
     <>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@300;400&display=swap');
-        @keyframes fadeUp { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: translateY(0); } }
-        @media(max-width:900px){ .dsv-nav { display: none !important; } .tc { grid-template-columns: 1fr !important; } .g3 { grid-template-columns: 1fr 1fr !important; } .g2 { grid-template-columns: 1fr !important; } }
-        @media(max-width:600px){ .g3 { grid-template-columns: 1fr !important; } }
+        @keyframes fadeUp { from { opacity:0; transform:translateY(28px); } to { opacity:1; transform:translateY(0); } }
+        *, *::before, *::after { box-sizing: border-box; }
+
+        @media(max-width:900px) {
+          .dsv-nav { display:none !important; }
+          .two-col { grid-template-columns:1fr !important; gap:40px !important; }
+          .three-col { grid-template-columns:1fr 1fr !important; }
+          .mandate-cols { grid-template-columns:1fr !important; }
+          .footer-cols { grid-template-columns:1fr !important; gap:32px !important; }
+          .approach-list { margin-top:0 !important; }
+        }
+
+        @media(max-width:600px) {
+          .three-col { grid-template-columns:1fr !important; }
+          .track-name { font-size:20px !important; }
+          .track-desc-col { display:none !important; }
+          .track-year { font-size:10px !important; }
+          .hero-tagline { font-size:12px !important; letter-spacing:0.08em !important; }
+          .cta-row { flex-direction:column !important; }
+          .cta-row a { text-align:center !important; }
+          .mandate-3cols { grid-template-columns:1fr !important; }
+          .long-mandate-pills { flex-direction:column !important; gap:12px !important; align-items:center !important; }
+          .risk-grid { grid-template-columns:1fr !important; gap:36px !important; }
+          .why-grid { grid-template-columns:1fr !important; gap:40px !important; }
+          .hide-mobile { display:none !important; }
+        }
       `}</style>
 
       <Header scrollY={scrollY} />
@@ -173,51 +188,46 @@ export default function DukeStreetVentures() {
       {/* ── HERO ─────────────────────────────────────────────────────────── */}
       <section style={{ position: "relative", minHeight: "100vh", display: "flex", flexDirection: "column", justifyContent: "flex-end", overflow: "hidden" }}>
         <IndustrialPhoto variant={4} style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
-        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom,rgba(14,14,14,0.25) 0%,rgba(14,14,14,0.1) 40%,rgba(14,14,14,0.92) 100%)" }} />
-        <div style={{ position: "relative", zIndex: 2, maxWidth: 1320, margin: "0 auto", padding: "0 40px 110px", width: "100%" }}>
+        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom,rgba(14,14,14,0.2) 0%,rgba(14,14,14,0.1) 40%,rgba(14,14,14,0.94) 100%)" }} />
+        <div style={{ position: "relative", zIndex: 2, maxWidth: 1320, margin: "0 auto", padding: "0 clamp(20px,5vw,40px) clamp(72px,10vw,110px)", width: "100%" }}>
           <div style={fi(0.05)}>
-            <div style={{ fontFamily: T.mono, fontSize: 11, letterSpacing: "0.22em", color: "rgba(245,242,236,0.4)", marginBottom: 40, textTransform: "uppercase" }}>Greenwich, Connecticut</div>
+            <div className="hero-tagline" style={{ fontFamily: T.mono, fontSize: 11, letterSpacing: "0.22em", color: "rgba(245,242,236,0.4)", marginBottom: 32, textTransform: "uppercase" }}>Greenwich, Connecticut</div>
           </div>
-          <h1 style={{ fontFamily: T.serif, fontSize: "clamp(52px,7vw,104px)", fontWeight: 300, lineHeight: 1.06, color: T.cream, maxWidth: 860, letterSpacing: "-0.015em", ...fi(0.2) }}>
+          <h1 style={{ fontFamily: T.serif, fontSize: "clamp(40px,6.5vw,104px)", fontWeight: 300, lineHeight: 1.06, color: T.cream, maxWidth: 860, letterSpacing: "-0.015em", ...fi(0.2) }}>
             Traditional&nbsp;Investment<br /><em style={{ fontStyle: "italic" }}>Structures.</em><br />Advanced&nbsp;Technology<br /><em style={{ fontStyle: "italic" }}>Platforms.</em>
           </h1>
-          <div style={{ ...fi(0.4), maxWidth: 600, marginTop: 40 }}>
-            <p style={{ fontFamily: T.sans, fontSize: 17, lineHeight: 1.8, color: "rgba(245,242,236,0.65)" }}>
-              A private investment partnership applying time-tested capital discipline to next-generation technology — including artificial intelligence, robotics, drone systems, high-value equipment, and digital infrastructure platforms.
+          <div style={{ maxWidth: 560, marginTop: 28, ...fi(0.38) }}>
+            <p style={{ fontFamily: T.sans, fontSize: "clamp(14px,2vw,17px)", lineHeight: 1.8, color: "rgba(245,242,236,0.65)" }}>
+              A private investment partnership applying time-tested capital discipline to next-generation technology — AI, robotics, drone systems, high-value equipment, and digital infrastructure.
             </p>
-            <p style={{ fontFamily: T.serif, fontSize: 20, fontStyle: "italic", color: "rgba(245,242,236,0.5)", marginTop: 24, lineHeight: 1.6 }}>
+            <p style={{ fontFamily: T.serif, fontSize: "clamp(16px,2vw,20px)", fontStyle: "italic", color: "rgba(245,242,236,0.45)", marginTop: 18, lineHeight: 1.6 }}>
               We invest in technology not as speculation, but as structured enterprise.
             </p>
           </div>
-          <div style={{ ...fi(0.55), display: "flex", gap: 20, marginTop: 52, flexWrap: "wrap" }}>
-            <a href="#investors" style={{ display: "inline-block", padding: "14px 36px", border: "1px solid rgba(245,242,236,0.65)", fontFamily: T.sans, fontSize: 12, letterSpacing: "0.14em", textTransform: "uppercase" as const, color: T.cream, textDecoration: "none", transition: "background 0.3s,color 0.3s" }}
+          <div className="cta-row" style={{ display: "flex", gap: 16, marginTop: 44, flexWrap: "wrap", ...fi(0.5) }}>
+            <a href="#investors" style={{ display: "inline-block", padding: "13px 32px", border: "1px solid rgba(245,242,236,0.65)", fontFamily: T.sans, fontSize: 12, letterSpacing: "0.14em", textTransform: "uppercase" as const, color: T.cream, textDecoration: "none", transition: "background 0.3s,color 0.3s" }}
               onMouseEnter={(e) => { const el = e.currentTarget as HTMLAnchorElement; el.style.background = T.cream; el.style.color = T.ink; }}
               onMouseLeave={(e) => { const el = e.currentTarget as HTMLAnchorElement; el.style.background = "transparent"; el.style.color = T.cream; }}
             >Investor Relations</a>
-            <a href="#philosophy" style={{ display: "inline-block", padding: "14px 36px", fontFamily: T.sans, fontSize: 12, letterSpacing: "0.14em", textTransform: "uppercase" as const, color: "rgba(245,242,236,0.45)", textDecoration: "none", transition: "color 0.3s" }}
+            <a href="#philosophy" style={{ display: "inline-block", padding: "13px 32px", fontFamily: T.sans, fontSize: 12, letterSpacing: "0.14em", textTransform: "uppercase" as const, color: "rgba(245,242,236,0.45)", textDecoration: "none", transition: "color 0.3s" }}
               onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = T.cream; }}
               onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = "rgba(245,242,236,0.45)"; }}
             >Our Philosophy →</a>
           </div>
         </div>
-        {/* Scroll indicator */}
-        <div style={{ position: "absolute", bottom: 40, right: 40, display: "flex", flexDirection: "column", alignItems: "center", gap: 8, opacity: 0.35 }}>
+        <div className="hide-mobile" style={{ position: "absolute", bottom: 36, right: 36, display: "flex", flexDirection: "column", alignItems: "center", gap: 8, opacity: 0.3 }}>
           <div style={{ fontFamily: T.mono, fontSize: 9, letterSpacing: "0.2em", color: T.cream, writingMode: "vertical-rl" }}>SCROLL</div>
-          <div style={{ width: 1, height: 48, background: `linear-gradient(to bottom,${T.cream},transparent)` }} />
+          <div style={{ width: 1, height: 40, background: `linear-gradient(to bottom,${T.cream},transparent)` }} />
         </div>
       </section>
 
       {/* ── MANDATE STRIP ──────────────────────────────────────────────────── */}
       <section style={{ background: T.ink, borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
-        <div style={{ maxWidth: 1320, margin: "0 auto", padding: "60px 40px", display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 1, background: "rgba(255,255,255,0.06)" }} className="g2">
-          {[
-            { n: "01", text: "Identify scalable innovation." },
-            { n: "02", text: "Structure it responsibly." },
-            { n: "03", text: "Build it for institutional durability." },
-          ].map((item) => (
-            <div key={item.n} style={{ background: T.ink, padding: "40px 48px", display: "flex", gap: 24, alignItems: "flex-start" }}>
+        <div className="mandate-3cols" style={{ maxWidth: 1320, margin: "0 auto", padding: `clamp(40px,6vw,60px) clamp(20px,5vw,40px)`, display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 1, background: "rgba(255,255,255,0.06)" }}>
+          {[{n:"01",text:"Identify scalable innovation."},{n:"02",text:"Structure it responsibly."},{n:"03",text:"Build it for institutional durability."}].map((item) => (
+            <div key={item.n} style={{ background: T.ink, padding: "clamp(28px,4vw,40px) clamp(24px,4vw,48px)", display: "flex", gap: 20, alignItems: "flex-start" }}>
               <div style={{ fontFamily: T.mono, fontSize: 10, color: "rgba(245,242,236,0.2)", letterSpacing: "0.15em", paddingTop: 4, flexShrink: 0 }}>{item.n}</div>
-              <div style={{ fontFamily: T.serif, fontSize: 22, fontWeight: 300, color: T.cream, lineHeight: 1.4, fontStyle: "italic" }}>{item.text}</div>
+              <div style={{ fontFamily: T.serif, fontSize: "clamp(18px,2.5vw,22px)", fontWeight: 300, color: T.cream, lineHeight: 1.4, fontStyle: "italic" }}>{item.text}</div>
             </div>
           ))}
         </div>
@@ -225,36 +235,30 @@ export default function DukeStreetVentures() {
 
       {/* ── PHILOSOPHY ─────────────────────────────────────────────────────── */}
       <section id="philosophy" style={{ background: T.cream }}>
-        <div className="tc" style={{ maxWidth: 1320, margin: "0 auto", padding: "120px 40px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 100, alignItems: "start" }}>
+        <div className="two-col" style={{ maxWidth: 1320, margin: "0 auto", padding: SP, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 80, alignItems: "start" }}>
           <div>
             <Reveal>
               <Label>Our Philosophy</Label>
-              <h2 style={{ fontFamily: T.serif, fontSize: "clamp(38px,4vw,64px)", fontWeight: 300, lineHeight: 1.1, color: T.ink, letterSpacing: "-0.01em" }}>
+              <h2 style={{ fontFamily: T.serif, fontSize: "clamp(30px,4vw,60px)", fontWeight: 300, lineHeight: 1.12, color: T.ink }}>
                 Technology evolves rapidly.<br /><em style={{ fontStyle: "italic" }}>Capital discipline should not.</em>
               </h2>
             </Reveal>
             <Reveal delay={0.1}>
               <DarkRule />
-              <p style={{ fontFamily: T.sans, fontSize: 16, lineHeight: 1.85, color: "#3a3a3a", marginBottom: 24 }}>
+              <p style={{ fontFamily: T.sans, fontSize: "clamp(14px,1.5vw,16px)", lineHeight: 1.85, color: "#3a3a3a", marginBottom: 20 }}>
                 Duke Street Ventures combines conventional investment principles — structured equity, governance integrity, defined liquidity pathways, and asset-backed frameworks — with exposure to frontier technologies shaping the next industrial era.
               </p>
-              <p style={{ fontFamily: T.sans, fontSize: 16, lineHeight: 1.85, color: "#3a3a3a" }}>
+              <p style={{ fontFamily: T.sans, fontSize: "clamp(14px,1.5vw,16px)", lineHeight: 1.85, color: "#3a3a3a" }}>
                 We believe the future of technology will not be purely digital.
               </p>
             </Reveal>
           </div>
           <div>
-            <Reveal delay={0.15}>
-              <IndustrialPhoto variant={2} style={{ width: "100%", aspectRatio: "3/4", marginBottom: 48 }} />
-            </Reveal>
+            <Reveal delay={0.15}><IndustrialPhoto variant={2} style={{ width: "100%", aspectRatio: "3/4", marginBottom: 40 }} /></Reveal>
             <Reveal delay={0.25}>
-              {[
-                { label: "It will be physical.", sub: "AI will power machines." },
-                { label: "Software will control hardware.", sub: "Automation will move into the real world." },
-                { label: "Our role is to finance that transition.", sub: "Responsibly." },
-              ].map((item, i) => (
-                <div key={i} style={{ padding: "22px 0", borderBottom: `1px solid ${T.border}` }}>
-                  <div style={{ fontFamily: T.serif, fontSize: 18, fontWeight: 400, color: T.ink, marginBottom: 4 }}>{item.label}</div>
+              {[{label:"It will be physical.",sub:"AI will power machines."},{label:"Software will control hardware.",sub:"Automation will move into the real world."},{label:"Our role is to finance that transition.",sub:"Responsibly."}].map((item, i) => (
+                <div key={i} style={{ padding: "20px 0", borderBottom: `1px solid ${T.border}` }}>
+                  <div style={{ fontFamily: T.serif, fontSize: "clamp(16px,1.8vw,18px)", fontWeight: 400, color: T.ink, marginBottom: 4 }}>{item.label}</div>
                   <div style={{ fontFamily: T.sans, fontSize: 13, color: T.mid }}>{item.sub}</div>
                 </div>
               ))}
@@ -267,35 +271,35 @@ export default function DukeStreetVentures() {
       <section id="focus" style={{ background: T.ink, position: "relative", overflow: "hidden" }}>
         <IndustrialPhoto variant={0} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", opacity: 0.25 }} />
         <div style={{ position: "absolute", inset: 0, background: "rgba(14,14,14,0.8)" }} />
-        <div style={{ position: "relative", zIndex: 2, maxWidth: 1320, margin: "0 auto", padding: "120px 40px" }}>
+        <div style={{ position: "relative", zIndex: 2, maxWidth: 1320, margin: "0 auto", padding: SP }}>
           <Reveal>
             <Label light>What We Invest In</Label>
-            <h2 style={{ fontFamily: T.serif, fontSize: "clamp(36px,4vw,60px)", fontWeight: 300, color: T.cream, marginBottom: 24, maxWidth: 640, lineHeight: 1.1 }}>
+            <h2 style={{ fontFamily: T.serif, fontSize: "clamp(28px,4vw,56px)", fontWeight: 300, color: T.cream, marginBottom: 20, maxWidth: 640, lineHeight: 1.1 }}>
               Platforms that combine innovation with measurable asset value.
             </h2>
-            <p style={{ fontFamily: T.sans, fontSize: 16, color: "rgba(245,242,236,0.5)", marginBottom: 80, maxWidth: 560, lineHeight: 1.8 }}>
+            <p style={{ fontFamily: T.sans, fontSize: "clamp(14px,1.5vw,16px)", color: "rgba(245,242,236,0.5)", marginBottom: "clamp(40px,6vw,80px)", maxWidth: 520, lineHeight: 1.8 }}>
               We focus on technology platforms with scalable infrastructure characteristics and defensible asset foundations.
             </p>
           </Reveal>
-          <div className="g3" style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 1, background: "rgba(255,255,255,0.05)" }}>
+          <div className="three-col" style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 1, background: "rgba(255,255,255,0.05)" }}>
             {([
-              { n: "01", photo: 0, title: "Artificial Intelligence Infrastructure", body: "Enterprise-grade AI systems, decision engines, and applied automation software." },
-              { n: "02", photo: 1, title: "Robotics & Autonomous Systems", body: "Industrial robots, commercial automation platforms, and AI-controlled hardware systems." },
-              { n: "03", photo: 3, title: "Drone Technology", body: "Advanced aerial systems for logistics, inspection, surveillance, and commercial applications." },
-              { n: "04", photo: 2, title: "High-Value Equipment Platforms", body: "Asset-backed technology deployments including precision manufacturing systems, AI-powered machinery, and advanced industrial equipment." },
-              { n: "05", photo: 1, title: "Structured Technology Holdings", body: "IP consolidation vehicles and holding companies integrating software and hardware innovation." },
-              { n: "06", photo: 3, title: "Digital & Blockchain Infrastructure", body: "Scalable ledger systems supporting asset tracking, supply chains, and digital asset frameworks." },
+              {n:"01",photo:0,title:"Artificial Intelligence Infrastructure",body:"Enterprise-grade AI systems, decision engines, and applied automation software."},
+              {n:"02",photo:1,title:"Robotics & Autonomous Systems",body:"Industrial robots, commercial automation platforms, and AI-controlled hardware systems."},
+              {n:"03",photo:3,title:"Drone Technology",body:"Advanced aerial systems for logistics, inspection, surveillance, and commercial applications."},
+              {n:"04",photo:2,title:"High-Value Equipment Platforms",body:"Asset-backed technology deployments including precision manufacturing systems and AI-powered machinery."},
+              {n:"05",photo:1,title:"Structured Technology Holdings",body:"IP consolidation vehicles and holding companies integrating software and hardware innovation."},
+              {n:"06",photo:3,title:"Digital & Blockchain Infrastructure",body:"Scalable ledger systems supporting asset tracking, supply chains, and digital asset frameworks."},
             ] as const).map((item, i) => (
               <Reveal key={item.n} delay={i * 0.06}>
-                <div style={{ background: T.ink, padding: "0", display: "flex", flexDirection: "column", height: "100%", transition: "background 0.3s", cursor: "default" }}
+                <div style={{ background: T.ink, display: "flex", flexDirection: "column", height: "100%", transition: "background 0.3s" }}
                   onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.background = "#161616"; }}
                   onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.background = T.ink; }}
                 >
                   <IndustrialPhoto variant={item.photo + i} style={{ width: "100%", aspectRatio: "16/9" }} />
-                  <div style={{ padding: "32px 36px 40px", flex: 1 }}>
-                    <div style={{ fontFamily: T.mono, fontSize: 10, letterSpacing: "0.2em", color: "rgba(245,242,236,0.25)", marginBottom: 16 }}>{item.n}</div>
-                    <h3 style={{ fontFamily: T.serif, fontSize: 21, fontWeight: 400, lineHeight: 1.25, color: T.cream, marginBottom: 14 }}>{item.title}</h3>
-                    <p style={{ fontFamily: T.sans, fontSize: 14, lineHeight: 1.75, color: "rgba(245,242,236,0.45)" }}>{item.body}</p>
+                  <div style={{ padding: "clamp(24px,3vw,32px) clamp(20px,3vw,36px) clamp(28px,3vw,40px)", flex: 1 }}>
+                    <div style={{ fontFamily: T.mono, fontSize: 10, letterSpacing: "0.2em", color: "rgba(245,242,236,0.25)", marginBottom: 12 }}>{item.n}</div>
+                    <h3 style={{ fontFamily: T.serif, fontSize: "clamp(17px,1.8vw,21px)", fontWeight: 400, lineHeight: 1.25, color: T.cream, marginBottom: 10 }}>{item.title}</h3>
+                    <p style={{ fontFamily: T.sans, fontSize: "clamp(13px,1.2vw,14px)", lineHeight: 1.7, color: "rgba(245,242,236,0.45)" }}>{item.body}</p>
                   </div>
                 </div>
               </Reveal>
@@ -306,43 +310,43 @@ export default function DukeStreetVentures() {
 
       {/* ── TRACK RECORD ───────────────────────────────────────────────────── */}
       <section id="track" style={{ background: T.cream }}>
-        <div style={{ maxWidth: 1320, margin: "0 auto", padding: "120px 40px" }}>
+        <div style={{ maxWidth: 1320, margin: "0 auto", padding: SP }}>
           <Reveal>
             <Label>Track Record</Label>
-            <h2 style={{ fontFamily: T.serif, fontSize: "clamp(36px,4vw,60px)", fontWeight: 300, lineHeight: 1.1, color: T.ink, marginBottom: 20, maxWidth: 680 }}>
+            <h2 style={{ fontFamily: T.serif, fontSize: "clamp(28px,4vw,56px)", fontWeight: 300, lineHeight: 1.1, color: T.ink, marginBottom: 16, maxWidth: 680 }}>
               Structured Technology Investments
             </h2>
-            <p style={{ fontFamily: T.sans, fontSize: 16, lineHeight: 1.8, color: T.mid, marginBottom: 72, maxWidth: 600 }}>
+            <p style={{ fontFamily: T.sans, fontSize: "clamp(14px,1.5vw,16px)", lineHeight: 1.8, color: T.mid, marginBottom: "clamp(40px,6vw,72px)", maxWidth: 560 }}>
               Duke Street Ventures has participated in the founding, capitalization, and structuring of multiple technology platforms across software and digital infrastructure.
             </p>
           </Reveal>
           <div style={{ display: "flex", flexDirection: "column" }}>
             {([
-              { name: "Magnus AI", year: "2021", role: "Founding Capital Partner", desc: "Founding capital partner and structural architect of AI decision infrastructure." },
-              { name: "NB Tech Acquisitions", year: "2020", role: "IP Consolidation Platform", desc: "Consolidated code-based IP across AI and advanced technologies; achieved Nasdaq public market exit via Night Owl merger." },
-              { name: "Night Owl Merger", year: "2021", role: "Strategic Transaction", desc: "Strategic public market transaction enabling institutional liquidity." },
-              { name: "Fundraising.com", year: "2022", role: "Capital Markets Architecture", desc: "Structured OTC Markets listing creating digital capital access infrastructure." },
-              { name: "Newport ECOM Brands", year: "2022", role: "Commerce Platform", desc: "Scalable commerce platform development and capitalization." },
-              { name: "DX Chain Assets", year: "2023", role: "Blockchain Infrastructure", desc: "Blockchain infrastructure initiative for digital asset and supply chain frameworks." },
-              { name: "Aurma & Supli", year: "2023", role: "Early-Stage Ecosystem", desc: "Early-stage funding through Magnus AI ecosystem — AI trading and commerce intelligence platforms." },
+              {name:"Magnus AI",year:"2021",role:"Founding Capital Partner",desc:"Founding capital partner and structural architect of AI decision infrastructure."},
+              {name:"NB Tech Acquisitions",year:"2020",role:"IP Consolidation Platform",desc:"Consolidated code-based IP across AI and advanced technologies; achieved Nasdaq public market exit via Night Owl merger."},
+              {name:"Night Owl Merger",year:"2021",role:"Strategic Transaction",desc:"Strategic public market transaction enabling institutional liquidity."},
+              {name:"Fundraising.com",year:"2022",role:"Capital Markets Architecture",desc:"Structured OTC Markets listing creating digital capital access infrastructure."},
+              {name:"Newport ECOM Brands",year:"2022",role:"Commerce Platform",desc:"Scalable commerce platform development and capitalization."},
+              {name:"DX Chain Assets",year:"2023",role:"Blockchain Infrastructure",desc:"Blockchain infrastructure initiative for digital asset and supply chain frameworks."},
+              {name:"Aurma & Supli",year:"2023",role:"Early-Stage Ecosystem",desc:"Early-stage funding through Magnus AI ecosystem — AI trading and commerce intelligence platforms."},
             ] as const).map((item, i) => (
               <Reveal key={item.name} delay={i * 0.07}>
-                <div style={{ display: "grid", gridTemplateColumns: "100px 200px 1fr", gap: "0 48px", padding: "36px 0", borderBottom: `1px solid ${T.border}`, alignItems: "start", transition: "padding-left 0.35s ease" }}
-                  onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.paddingLeft = "20px"; }}
+                <div style={{ padding: "clamp(24px,3vw,36px) 0", borderBottom: `1px solid ${T.border}`, transition: "padding-left 0.3s" }}
+                  onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.paddingLeft = "12px"; }}
                   onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.paddingLeft = "0"; }}
                 >
-                  <div style={{ fontFamily: T.mono, fontSize: 11, color: "rgba(0,0,0,0.25)", letterSpacing: "0.1em", paddingTop: 4 }}>{item.year}</div>
-                  <div>
-                    <div style={{ fontFamily: T.serif, fontSize: 24, fontWeight: 400, color: T.ink, marginBottom: 4 }}>{item.name}</div>
-                    <div style={{ fontFamily: T.mono, fontSize: 10, letterSpacing: "0.14em", color: T.mid, textTransform: "uppercase" }}>{item.role}</div>
+                  <div style={{ display: "flex", alignItems: "baseline", gap: 16, marginBottom: 6, flexWrap: "wrap" }}>
+                    <div className="track-name" style={{ fontFamily: T.serif, fontSize: "clamp(20px,2.5vw,26px)", fontWeight: 400, color: T.ink }}>{item.name}</div>
+                    <div style={{ fontFamily: T.mono, fontSize: 10, letterSpacing: "0.14em", color: T.mid, textTransform: "uppercase" as const }}>{item.role}</div>
+                    <div className="track-year" style={{ fontFamily: T.mono, fontSize: 11, color: "rgba(0,0,0,0.2)", marginLeft: "auto" }}>{item.year}</div>
                   </div>
-                  <p style={{ fontFamily: T.sans, fontSize: 14, color: "#5a5a5a", lineHeight: 1.75, maxWidth: 520 }}>{item.desc}</p>
+                  <p style={{ fontFamily: T.sans, fontSize: "clamp(13px,1.3vw,14px)", color: "#5a5a5a", lineHeight: 1.75, maxWidth: 680 }}>{item.desc}</p>
                 </div>
               </Reveal>
             ))}
           </div>
           <Reveal delay={0.2}>
-            <p style={{ fontFamily: T.serif, fontSize: 18, fontStyle: "italic", color: T.mid, marginTop: 56, lineHeight: 1.7 }}>
+            <p style={{ fontFamily: T.serif, fontSize: "clamp(16px,1.8vw,18px)", fontStyle: "italic", color: T.mid, marginTop: 48, lineHeight: 1.7 }}>
               Our forward mandate expands further into physical AI applications, robotics, and equipment-backed platforms.
             </p>
           </Reveal>
@@ -353,31 +357,24 @@ export default function DukeStreetVentures() {
       <section id="approach" style={{ background: T.ink, position: "relative", overflow: "hidden" }}>
         <IndustrialPhoto variant={1} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", opacity: 0.3 }} />
         <div style={{ position: "absolute", inset: 0, background: "linear-gradient(120deg,rgba(14,14,14,0.96) 0%,rgba(14,14,14,0.7) 100%)" }} />
-        <div className="tc" style={{ position: "relative", zIndex: 2, maxWidth: 1320, margin: "0 auto", padding: "120px 40px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 100, alignItems: "start" }}>
+        <div className="two-col" style={{ position: "relative", zIndex: 2, maxWidth: 1320, margin: "0 auto", padding: SP, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 80, alignItems: "start" }}>
           <div>
             <Reveal>
               <Label light>Investment Approach</Label>
-              <h2 style={{ fontFamily: T.serif, fontSize: "clamp(36px,4vw,60px)", fontWeight: 300, color: T.cream, lineHeight: 1.1, marginBottom: 32 }}>
+              <h2 style={{ fontFamily: T.serif, fontSize: "clamp(28px,4vw,56px)", fontWeight: 300, color: T.cream, lineHeight: 1.1, marginBottom: 28 }}>
                 We structure innovation using traditional frameworks.
               </h2>
-              <p style={{ fontFamily: T.serif, fontSize: 20, fontStyle: "italic", color: "rgba(245,242,236,0.45)", lineHeight: 1.7 }}>
+              <p style={{ fontFamily: T.serif, fontSize: "clamp(16px,1.8vw,20px)", fontStyle: "italic", color: "rgba(245,242,236,0.45)", lineHeight: 1.7 }}>
                 We do not pursue rapid, undisciplined growth.<br />We pursue structured scale.
               </p>
             </Reveal>
           </div>
           <div>
             <Reveal delay={0.15}>
-              {[
-                "Structured equity participation",
-                "Clear governance models",
-                "Asset-backed capitalization",
-                "Defined liquidity pathways",
-                "Institutional accounting discipline",
-                "Public-market readiness where appropriate",
-              ].map((item, i) => (
-                <div key={i} style={{ display: "flex", alignItems: "center", gap: 20, padding: "20px 0", borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
-                  <div style={{ width: 6, height: 6, border: "1px solid rgba(245,242,236,0.3)", flexShrink: 0 }} />
-                  <span style={{ fontFamily: T.sans, fontSize: 15, color: "rgba(245,242,236,0.7)", lineHeight: 1.5 }}>{item}</span>
+              {["Structured equity participation","Clear governance models","Asset-backed capitalization","Defined liquidity pathways","Institutional accounting discipline","Public-market readiness where appropriate"].map((item, i) => (
+                <div key={i} style={{ display: "flex", alignItems: "center", gap: 16, padding: "18px 0", borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
+                  <div style={{ width: 5, height: 5, border: "1px solid rgba(245,242,236,0.3)", flexShrink: 0 }} />
+                  <span style={{ fontFamily: T.sans, fontSize: "clamp(13px,1.3vw,15px)", color: "rgba(245,242,236,0.7)", lineHeight: 1.5 }}>{item}</span>
                 </div>
               ))}
             </Reveal>
@@ -387,44 +384,35 @@ export default function DukeStreetVentures() {
 
       {/* ── WHY HARDWARE ───────────────────────────────────────────────────── */}
       <section style={{ background: "#fff", borderTop: `1px solid ${T.border}` }}>
-        <div style={{ maxWidth: 1320, margin: "0 auto", padding: "120px 40px" }}>
+        <div style={{ maxWidth: 1320, margin: "0 auto", padding: SP }}>
           <Reveal>
             <Label>Why Hardware Matters</Label>
-            <h2 style={{ fontFamily: T.serif, fontSize: "clamp(36px,4vw,60px)", fontWeight: 300, lineHeight: 1.1, color: T.ink, marginBottom: 32, maxWidth: 720 }}>
+            <h2 style={{ fontFamily: T.serif, fontSize: "clamp(28px,4vw,56px)", fontWeight: 300, lineHeight: 1.1, color: T.ink, marginBottom: 28, maxWidth: 680 }}>
               Software alone does not define<br /><em style={{ fontStyle: "italic" }}>the next industrial cycle.</em>
             </h2>
           </Reveal>
-          <div className="tc" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 100, alignItems: "start", marginTop: 64 }}>
+          <div className="why-grid two-col" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 80, alignItems: "start", marginTop: 48 }}>
             <div>
               <Reveal delay={0.1}>
-                <p style={{ fontFamily: T.sans, fontSize: 16, lineHeight: 1.85, color: "#3a3a3a", marginBottom: 32 }}>
+                <p style={{ fontFamily: T.sans, fontSize: "clamp(14px,1.5vw,16px)", lineHeight: 1.85, color: "#3a3a3a", marginBottom: 28 }}>
                   Duke Street Ventures recognizes that robotics, drones, and intelligent equipment represent the convergence of digital intelligence and real-world assets.
                 </p>
-                {[
-                  "AI must operate machines.",
-                  "Automation must control equipment.",
-                  "Data must direct physical systems.",
-                ].map((line, i) => (
-                  <div key={i} style={{ fontFamily: T.serif, fontSize: 20, fontStyle: "italic", color: T.ink, padding: "16px 0", borderBottom: `1px solid ${T.border}`, lineHeight: 1.4 }}>{line}</div>
+                {["AI must operate machines.","Automation must control equipment.","Data must direct physical systems."].map((line, i) => (
+                  <div key={i} style={{ fontFamily: T.serif, fontSize: "clamp(17px,1.8vw,20px)", fontStyle: "italic", color: T.ink, padding: "14px 0", borderBottom: `1px solid ${T.border}`, lineHeight: 1.4 }}>{line}</div>
                 ))}
               </Reveal>
             </div>
             <div>
               <Reveal delay={0.2}>
-                <IndustrialPhoto variant={3} style={{ width: "100%", aspectRatio: "4/3", marginBottom: 48 }} />
-                <p style={{ fontFamily: T.sans, fontSize: 14, color: T.mid, lineHeight: 1.8, marginBottom: 24 }}>These platforms often carry:</p>
-                {[
-                  "Tangible collateral value",
-                  "Infrastructure characteristics",
-                  "Recurring deployment models",
-                  "Industrial-scale adoption potential",
-                ].map((item, i) => (
-                  <div key={i} style={{ display: "flex", gap: 16, alignItems: "center", padding: "14px 0", borderBottom: `1px solid ${T.border}` }}>
+                <IndustrialPhoto variant={3} style={{ width: "100%", aspectRatio: "4/3", marginBottom: 36 }} />
+                <p style={{ fontFamily: T.sans, fontSize: 13, color: T.mid, lineHeight: 1.8, marginBottom: 16 }}>These platforms often carry:</p>
+                {["Tangible collateral value","Infrastructure characteristics","Recurring deployment models","Industrial-scale adoption potential"].map((item, i) => (
+                  <div key={i} style={{ display: "flex", gap: 14, alignItems: "center", padding: "13px 0", borderBottom: `1px solid ${T.border}` }}>
                     <div style={{ width: 5, height: 5, background: T.ink, flexShrink: 0 }} />
-                    <span style={{ fontFamily: T.sans, fontSize: 14, color: "#3a3a3a" }}>{item}</span>
+                    <span style={{ fontFamily: T.sans, fontSize: "clamp(13px,1.3vw,14px)", color: "#3a3a3a" }}>{item}</span>
                   </div>
                 ))}
-                <p style={{ fontFamily: T.serif, fontSize: 17, fontStyle: "italic", color: T.mid, marginTop: 32, lineHeight: 1.7 }}>This aligns naturally with traditional investment discipline.</p>
+                <p style={{ fontFamily: T.serif, fontSize: "clamp(15px,1.6vw,17px)", fontStyle: "italic", color: T.mid, marginTop: 24, lineHeight: 1.7 }}>This aligns naturally with traditional investment discipline.</p>
               </Reveal>
             </div>
           </div>
@@ -433,25 +421,25 @@ export default function DukeStreetVentures() {
 
       {/* ── RISK MANAGEMENT ────────────────────────────────────────────────── */}
       <section style={{ background: T.cream, borderTop: `1px solid ${T.border}` }}>
-        <div className="tc" style={{ maxWidth: 1320, margin: "0 auto", padding: "100px 40px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 100, alignItems: "center" }}>
+        <div className="risk-grid two-col" style={{ maxWidth: 1320, margin: "0 auto", padding: SP, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 80, alignItems: "center" }}>
           <Reveal>
             <Label>Risk Management Framework</Label>
-            <h2 style={{ fontFamily: T.serif, fontSize: "clamp(32px,3.5vw,52px)", fontWeight: 300, lineHeight: 1.15, color: T.ink, marginBottom: 32 }}>
+            <h2 style={{ fontFamily: T.serif, fontSize: "clamp(26px,3.5vw,48px)", fontWeight: 300, lineHeight: 1.15, color: T.ink, marginBottom: 24 }}>
               Technology risk is mitigated through structure.
             </h2>
-            <p style={{ fontFamily: T.serif, fontSize: 20, fontStyle: "italic", color: T.mid, lineHeight: 1.7 }}>Structure is our advantage.</p>
+            <p style={{ fontFamily: T.serif, fontSize: "clamp(17px,1.8vw,20px)", fontStyle: "italic", color: T.mid, lineHeight: 1.7 }}>Structure is our advantage.</p>
           </Reveal>
           <Reveal delay={0.15}>
             <div>
               {[
-                { label: "Capital Structure Integrity", sub: "Governance-first approach to every investment." },
-                { label: "Asset Defensibility", sub: "Real asset backing wherever structurally possible." },
-                { label: "Regulatory Positioning", sub: "Compliant frameworks from day one." },
-                { label: "Revenue Durability", sub: "Recurring, defensible revenue streams." },
-                { label: "Exit Optionality", sub: "Defined liquidity pathways built into structure." },
+                {label:"Capital Structure Integrity",sub:"Governance-first approach to every investment."},
+                {label:"Asset Defensibility",sub:"Real asset backing wherever structurally possible."},
+                {label:"Regulatory Positioning",sub:"Compliant frameworks from day one."},
+                {label:"Revenue Durability",sub:"Recurring, defensible revenue streams."},
+                {label:"Exit Optionality",sub:"Defined liquidity pathways built into structure."},
               ].map((item, i) => (
-                <div key={i} style={{ padding: "24px 0", borderBottom: `1px solid ${T.border}` }}>
-                  <div style={{ fontFamily: T.sans, fontSize: 14, fontWeight: 500, color: T.ink, marginBottom: 6 }}>{item.label}</div>
+                <div key={i} style={{ padding: "20px 0", borderBottom: `1px solid ${T.border}` }}>
+                  <div style={{ fontFamily: T.sans, fontSize: "clamp(13px,1.3vw,14px)", fontWeight: 500, color: T.ink, marginBottom: 5 }}>{item.label}</div>
                   <div style={{ fontFamily: T.sans, fontSize: 13, color: T.mid, lineHeight: 1.6 }}>{item.sub}</div>
                 </div>
               ))}
@@ -464,17 +452,17 @@ export default function DukeStreetVentures() {
       <section id="investors" style={{ background: T.ink, position: "relative", overflow: "hidden" }}>
         <IndustrialPhoto variant={2} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", opacity: 0.2 }} />
         <div style={{ position: "absolute", inset: 0, background: "rgba(14,14,14,0.85)" }} />
-        <div className="tc" style={{ position: "relative", zIndex: 2, maxWidth: 1320, margin: "0 auto", padding: "120px 40px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 100, alignItems: "start" }}>
+        <div className="two-col" style={{ position: "relative", zIndex: 2, maxWidth: 1320, margin: "0 auto", padding: SP, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 80, alignItems: "start" }}>
           <div>
             <Reveal>
               <Label light>Investor Profile</Label>
-              <h2 style={{ fontFamily: T.serif, fontSize: "clamp(36px,4vw,58px)", fontWeight: 300, color: T.cream, lineHeight: 1.1, marginBottom: 32 }}>
+              <h2 style={{ fontFamily: T.serif, fontSize: "clamp(28px,4vw,54px)", fontWeight: 300, color: T.cream, lineHeight: 1.1, marginBottom: 24 }}>
                 Qualified investors seeking structured technology exposure.
               </h2>
-              <p style={{ fontFamily: T.sans, fontSize: 16, lineHeight: 1.8, color: "rgba(245,242,236,0.55)", marginBottom: 40 }}>
+              <p style={{ fontFamily: T.sans, fontSize: "clamp(14px,1.5vw,16px)", lineHeight: 1.8, color: "rgba(245,242,236,0.55)", marginBottom: 36 }}>
                 We partner with qualified investors seeking exposure to advanced technology platforms without abandoning conservative capital frameworks.
               </p>
-              <a href="mailto:investors@dukestreetventures.com" style={{ display: "inline-block", padding: "14px 36px", border: "1px solid rgba(245,242,236,0.5)", fontFamily: T.sans, fontSize: 12, letterSpacing: "0.14em", textTransform: "uppercase" as const, color: T.cream, textDecoration: "none", transition: "background 0.3s,color 0.3s" }}
+              <a href="mailto:investors@dukestreetventures.com" style={{ display: "inline-block", padding: "13px 32px", border: "1px solid rgba(245,242,236,0.5)", fontFamily: T.sans, fontSize: 12, letterSpacing: "0.14em", textTransform: "uppercase" as const, color: T.cream, textDecoration: "none", transition: "background 0.3s,color 0.3s" }}
                 onMouseEnter={(e) => { const el = e.currentTarget as HTMLAnchorElement; el.style.background = T.cream; el.style.color = T.ink; }}
                 onMouseLeave={(e) => { const el = e.currentTarget as HTMLAnchorElement; el.style.background = "transparent"; el.style.color = T.cream; }}
               >Request Information</a>
@@ -482,17 +470,11 @@ export default function DukeStreetVentures() {
           </div>
           <div>
             <Reveal delay={0.15}>
-              <div style={{ fontFamily: T.sans, fontSize: 13, color: "rgba(245,242,236,0.35)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: 24 }}>Our investors value:</div>
-              {[
-                "Governance",
-                "Measured scaling",
-                "Institutional structuring",
-                "Strategic liquidity pathways",
-                "Real-asset integration with technology",
-              ].map((item, i) => (
-                <div key={i} style={{ display: "flex", gap: 20, alignItems: "center", padding: "20px 0", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
-                  <div style={{ width: 6, height: 6, border: "1px solid rgba(245,242,236,0.25)", flexShrink: 0 }} />
-                  <span style={{ fontFamily: T.sans, fontSize: 15, color: "rgba(245,242,236,0.65)" }}>{item}</span>
+              <div style={{ fontFamily: T.sans, fontSize: 12, color: "rgba(245,242,236,0.3)", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: 20 }}>Our investors value:</div>
+              {["Governance","Measured scaling","Institutional structuring","Strategic liquidity pathways","Real-asset integration with technology"].map((item, i) => (
+                <div key={i} style={{ display: "flex", gap: 16, alignItems: "center", padding: "18px 0", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+                  <div style={{ width: 5, height: 5, border: "1px solid rgba(245,242,236,0.25)", flexShrink: 0 }} />
+                  <span style={{ fontFamily: T.sans, fontSize: "clamp(13px,1.3vw,15px)", color: "rgba(245,242,236,0.65)" }}>{item}</span>
                 </div>
               ))}
             </Reveal>
@@ -501,27 +483,27 @@ export default function DukeStreetVentures() {
       </section>
 
       {/* ── LONG-TERM MANDATE / CONTACT ─────────────────────────────────────── */}
-      <section style={{ position: "relative", overflow: "hidden", minHeight: "70vh", display: "flex", alignItems: "center" }}>
+      <section style={{ position: "relative", overflow: "hidden", minHeight: "60vh", display: "flex", alignItems: "center" }}>
         <IndustrialPhoto variant={4} style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
-        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom,rgba(14,14,14,0.88) 0%,rgba(14,14,14,0.75) 100%)" }} />
-        <div style={{ position: "relative", zIndex: 2, maxWidth: 1320, margin: "0 auto", padding: "120px 40px", textAlign: "center" }}>
+        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom,rgba(14,14,14,0.88) 0%,rgba(14,14,14,0.78) 100%)" }} />
+        <div style={{ position: "relative", zIndex: 2, maxWidth: 1320, margin: "0 auto", padding: SP, textAlign: "center", width: "100%" }}>
           <Reveal>
             <Label light>Long-Term Mandate</Label>
-            <h2 style={{ fontFamily: T.serif, fontSize: "clamp(40px,5.5vw,82px)", fontWeight: 300, lineHeight: 1.08, color: T.cream, marginBottom: 40, letterSpacing: "-0.015em", maxWidth: 900, margin: "0 auto 40px" }}>
+            <h2 style={{ fontFamily: T.serif, fontSize: "clamp(32px,5.5vw,80px)", fontWeight: 300, lineHeight: 1.08, color: T.cream, letterSpacing: "-0.015em", maxWidth: 860, margin: "0 auto 36px" }}>
               Building a portfolio for the next industrial decade.
             </h2>
           </Reveal>
           <Reveal delay={0.15}>
-            <div style={{ display: "flex", justifyContent: "center", gap: 80, marginBottom: 72, flexWrap: "wrap" }}>
-              {["The future will be intelligent.", "It will also be physical.", "We invest in both."].map((line, i) => (
-                <div key={i} style={{ fontFamily: T.serif, fontSize: 20, fontStyle: "italic", color: "rgba(245,242,236,0.5)", lineHeight: 1.5 }}>{line}</div>
+            <div className="long-mandate-pills" style={{ display: "flex", justifyContent: "center", gap: "clamp(20px,5vw,72px)", marginBottom: "clamp(40px,6vw,72px)", flexWrap: "wrap" }}>
+              {["The future will be intelligent.","It will also be physical.","We invest in both."].map((line, i) => (
+                <div key={i} style={{ fontFamily: T.serif, fontSize: "clamp(16px,1.8vw,20px)", fontStyle: "italic", color: "rgba(245,242,236,0.5)", lineHeight: 1.5 }}>{line}</div>
               ))}
             </div>
           </Reveal>
           <Reveal delay={0.25}>
-            <div style={{ borderTop: "1px solid rgba(245,242,236,0.12)", paddingTop: 64 }}>
-              <div style={{ fontFamily: T.mono, fontSize: 11, letterSpacing: "0.25em", color: "rgba(245,242,236,0.3)", textTransform: "uppercase", marginBottom: 24 }}>Investor Relations</div>
-              <a href="mailto:investors@dukestreetventures.com" style={{ display: "inline-block", fontFamily: T.mono, fontSize: 18, letterSpacing: "0.08em", color: T.cream, textDecoration: "none", borderBottom: "1px solid rgba(245,242,236,0.3)", paddingBottom: 6, transition: "border-color 0.3s" }}
+            <div style={{ borderTop: "1px solid rgba(245,242,236,0.12)", paddingTop: "clamp(40px,5vw,64px)" }}>
+              <div style={{ fontFamily: T.mono, fontSize: 11, letterSpacing: "0.25em", color: "rgba(245,242,236,0.3)", textTransform: "uppercase", marginBottom: 20 }}>Investor Relations</div>
+              <a href="mailto:investors@dukestreetventures.com" style={{ display: "inline-block", fontFamily: T.mono, fontSize: "clamp(13px,2vw,18px)", letterSpacing: "0.06em", color: T.cream, textDecoration: "none", borderBottom: "1px solid rgba(245,242,236,0.3)", paddingBottom: 6, transition: "border-color 0.3s" }}
                 onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.borderColor = "#fff"; }}
                 onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.borderColor = "rgba(245,242,236,0.3)"; }}
               >investors@dukestreetventures.com</a>
@@ -531,20 +513,20 @@ export default function DukeStreetVentures() {
       </section>
 
       {/* ── FOOTER ─────────────────────────────────────────────────────────── */}
-      <footer style={{ background: "#060606", borderTop: "1px solid rgba(255,255,255,0.04)", padding: "60px 40px" }}>
-        <div className="tc" style={{ maxWidth: 1320, margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 2fr", gap: 80, alignItems: "start" }}>
+      <footer style={{ background: "#060606", borderTop: "1px solid rgba(255,255,255,0.04)", padding: "clamp(40px,6vw,60px) clamp(20px,5vw,40px)" }}>
+        <div className="two-col footer-cols" style={{ maxWidth: 1320, margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 2fr", gap: 60, alignItems: "start" }}>
           <div>
-            <div style={{ fontFamily: T.serif, fontSize: 13, letterSpacing: "0.28em", color: "rgba(245,242,236,0.5)", marginBottom: 10 }}>DUKE STREET VENTURES</div>
-            <div style={{ fontFamily: T.mono, fontSize: 11, color: "rgba(245,242,236,0.2)", letterSpacing: "0.1em" }}>Greenwich, Connecticut</div>
+            <div style={{ fontFamily: T.serif, fontSize: 12, letterSpacing: "0.28em", color: "rgba(245,242,236,0.5)", marginBottom: 10 }}>DUKE STREET VENTURES</div>
+            <div style={{ fontFamily: T.mono, fontSize: 10, color: "rgba(245,242,236,0.2)", letterSpacing: "0.1em" }}>Greenwich, Connecticut</div>
           </div>
           <div>
-            <div style={{ fontFamily: T.mono, fontSize: 10, letterSpacing: "0.2em", color: "rgba(245,242,236,0.2)", textTransform: "uppercase", marginBottom: 14 }}>Legal Notice</div>
+            <div style={{ fontFamily: T.mono, fontSize: 10, letterSpacing: "0.2em", color: "rgba(245,242,236,0.2)", textTransform: "uppercase", marginBottom: 12 }}>Legal Notice</div>
             <p style={{ fontFamily: T.sans, fontSize: 12, lineHeight: 1.8, color: "rgba(245,242,236,0.18)" }}>
               Duke Street Ventures is a private investment partnership. Investments involve risk and are available only to qualified investors under applicable securities regulations. Past performance is not indicative of future results.
             </p>
           </div>
         </div>
-        <div style={{ maxWidth: 1320, margin: "40px auto 0", paddingTop: 32, borderTop: "1px solid rgba(255,255,255,0.04)", display: "flex", justifyContent: "space-between", fontFamily: T.mono, fontSize: 10, letterSpacing: "0.15em", color: "rgba(245,242,236,0.12)" }}>
+        <div style={{ maxWidth: 1320, margin: "32px auto 0", paddingTop: 28, borderTop: "1px solid rgba(255,255,255,0.04)", display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 12, fontFamily: T.mono, fontSize: 10, letterSpacing: "0.12em", color: "rgba(245,242,236,0.12)" }}>
           <span>© {new Date().getFullYear()} Duke Street Ventures. All rights reserved.</span>
           <span>investors@dukestreetventures.com</span>
         </div>
