@@ -191,7 +191,7 @@ export default function DukeStreetVentures() {
         <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom,rgba(14,14,14,0.2) 0%,rgba(14,14,14,0.1) 40%,rgba(14,14,14,0.94) 100%)" }} />
         <div style={{ position: "relative", zIndex: 2, maxWidth: 1320, margin: "0 auto", padding: "0 clamp(20px,5vw,40px) clamp(72px,10vw,110px)", width: "100%" }}>
           <div style={fi(0.05)}>
-            <div className="hero-tagline" style={{ fontFamily: T.mono, fontSize: 11, letterSpacing: "0.22em", color: "rgba(245,242,236,0.4)", marginBottom: 32, textTransform: "uppercase" }}>Greenwich, Connecticut</div>
+            <div className="hero-tagline" style={{ fontFamily: T.mono, fontSize: 11, letterSpacing: "0.22em", color: "rgba(245,242,236,0.4)", marginBottom: 32, textTransform: "uppercase" }}>660 Newport Center Dr, Suite 850</div>
           </div>
           <h1 style={{ fontFamily: T.serif, fontSize: "clamp(40px,6.5vw,104px)", fontWeight: 300, lineHeight: 1.06, color: T.cream, maxWidth: 860, letterSpacing: "-0.015em", ...fi(0.2) }}>
             Traditional&nbsp;Investment<br /><em style={{ fontStyle: "italic" }}>Structures.</em><br />Advanced&nbsp;Technology<br /><em style={{ fontStyle: "italic" }}>Platforms.</em>
@@ -517,7 +517,7 @@ export default function DukeStreetVentures() {
         <div className="two-col footer-cols" style={{ maxWidth: 1320, margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 2fr", gap: 60, alignItems: "start" }}>
           <div>
             <div style={{ fontFamily: T.serif, fontSize: 12, letterSpacing: "0.28em", color: "rgba(245,242,236,0.5)", marginBottom: 10 }}>DUKE STREET VENTURES</div>
-            <div style={{ fontFamily: T.mono, fontSize: 10, color: "rgba(245,242,236,0.2)", letterSpacing: "0.1em" }}>Greenwich, Connecticut</div>
+            <div style={{ fontFamily: T.mono, fontSize: 10, color: "rgba(245,242,236,0.2)", letterSpacing: "0.1em", lineHeight: 1.8 }}>660 Newport Center Dr, Suite 850<br />Newport Beach, CA 92660</div>
           </div>
           <div>
             <div style={{ fontFamily: T.mono, fontSize: 10, letterSpacing: "0.2em", color: "rgba(245,242,236,0.2)", textTransform: "uppercase", marginBottom: 12 }}>Legal Notice</div>
