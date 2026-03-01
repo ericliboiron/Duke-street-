@@ -6,10 +6,18 @@ interface RevealProps { children: React.ReactNode; delay?: number; y?: number; c
 interface PhotoProps { variant?: number; style?: React.CSSProperties; className?: string; }
 interface HeaderProps { scrollY: number; }
 
+// Only animate after mount — prevents invisible content on static export
 function useReveal(threshold = 0.12): [React.RefObject<HTMLDivElement | null>, boolean] {
   const ref = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
   useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
     const el = ref.current;
     if (!el) return;
     const obs = new IntersectionObserver(
@@ -18,14 +26,29 @@ function useReveal(threshold = 0.12): [React.RefObject<HTMLDivElement | null>, b
     );
     obs.observe(el);
     return () => obs.disconnect();
-  }, [threshold]);
-  return [ref, visible];
+  }, [mounted, threshold]);
+
+  // If not yet mounted, return visible=true so SSR/static content shows
+  return [ref, !mounted ? true : visible];
 }
 
 function Reveal({ children, delay = 0, y = 40, className = "", style = {} }: RevealProps) {
   const [ref, visible] = useReveal();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
+
   return (
-    <div ref={ref} className={className} style={{ opacity: visible ? 1 : 0, transform: visible ? "translateY(0px)" : `translateY(${y}px)`, transition: `opacity 0.9s cubic-bezier(0.16,1,0.3,1) ${delay}s, transform 0.9s cubic-bezier(0.16,1,0.3,1) ${delay}s`, ...style }}>
+    <div
+      ref={ref}
+      className={className}
+      style={{
+        // No animation until JS mounts — content always visible on first paint
+        opacity: !mounted ? 1 : visible ? 1 : 0,
+        transform: !mounted ? "none" : visible ? "translateY(0px)" : `translateY(${y}px)`,
+        transition: mounted ? `opacity 0.9s cubic-bezier(0.16,1,0.3,1) ${delay}s, transform 0.9s cubic-bezier(0.16,1,0.3,1) ${delay}s` : "none",
+        ...style,
+      }}
+    >
       {children}
     </div>
   );
@@ -34,7 +57,7 @@ function Reveal({ children, delay = 0, y = 40, className = "", style = {} }: Rev
 function IndustrialPhoto({ variant = 0, style = {}, className = "" }: PhotoProps) {
   const idx = variant % 5;
   const id = `p${idx}v${variant}`;
-  const photos = [
+  const photos: React.ReactNode[] = [
     <svg key="0" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" style={{ display: "block" }}>
       <defs>
         <linearGradient id={`${id}bg`} x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stopColor="#181818" /><stop offset="55%" stopColor="#242424" /><stop offset="100%" stopColor="#101010" /></linearGradient>
@@ -127,18 +150,30 @@ const T = { serif: "'Cormorant Garamond',Georgia,serif", sans: "'DM Sans',sans-s
 
 export default function DukeStreetVentures() {
   const [scrollY, setScrollY] = useState(0);
-  const [heroVisible, setHeroVisible] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
   useEffect(() => {
+    setMounted(true);
     const onScroll = () => setScrollY(window.scrollY);
     window.addEventListener("scroll", onScroll, { passive: true });
-    const t = setTimeout(() => setHeroVisible(true), 80);
-    return () => { window.removeEventListener("scroll", onScroll); clearTimeout(t); };
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
-  const fi = (d: number): React.CSSProperties => ({ opacity: heroVisible ? 1 : 0, transform: heroVisible ? "translateY(0)" : "translateY(28px)", transition: `opacity 1s ease ${d}s, transform 1s ease ${d}s` });
+
+  // Hero text: visible immediately on SSR, animates in after mount
+  const fi = (d: number): React.CSSProperties => !mounted ? {} : ({
+    opacity: 1,
+    transform: "translateY(0)",
+    animation: `fadeUp 0.9s cubic-bezier(0.16,1,0.3,1) ${d}s both`,
+  });
 
   return (
     <>
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@300;400&display=swap'); @media(max-width:768px){.tc{grid-template-columns:1fr!important}.g4{grid-template-columns:1fr 1fr!important}.hn{display:none!important}}`}</style>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@300;400&display=swap');
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: translateY(0); } }
+        @media(max-width:768px){.tc{grid-template-columns:1fr!important}.g4{grid-template-columns:1fr 1fr!important}}
+      `}</style>
+
       <Header scrollY={scrollY} />
 
       {/* HERO */}
@@ -146,7 +181,9 @@ export default function DukeStreetVentures() {
         <IndustrialPhoto variant={4} style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
         <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom,rgba(14,14,14,0.3) 0%,rgba(14,14,14,0.15) 50%,rgba(14,14,14,0.88) 100%)" }} />
         <div style={{ position: "relative", zIndex: 2, maxWidth: 1320, margin: "0 auto", padding: "0 40px 100px", width: "100%" }}>
-          <div style={fi(0.1)}><div style={{ fontFamily: T.mono, fontSize: 11, letterSpacing: "0.22em", color: "rgba(245,242,236,0.45)", marginBottom: 32, textTransform: "uppercase" }}>Greenwich, Connecticut · Est. 2019</div></div>
+          <div style={fi(0.1)}>
+            <div style={{ fontFamily: T.mono, fontSize: 11, letterSpacing: "0.22em", color: "rgba(245,242,236,0.45)", marginBottom: 32, textTransform: "uppercase" }}>Greenwich, Connecticut · Est. 2019</div>
+          </div>
           <h1 style={{ fontFamily: T.serif, fontSize: "clamp(48px,6.5vw,96px)", fontWeight: 300, lineHeight: 1.08, color: T.cream, maxWidth: 820, ...fi(0.25) }}>
             Traditional&nbsp;Investment<br /><em style={{ fontStyle: "italic", fontWeight: 300 }}>Structures.</em><br />Advanced&nbsp;Technology<br /><em style={{ fontStyle: "italic", fontWeight: 300 }}>Platforms.</em>
           </h1>
@@ -164,7 +201,7 @@ export default function DukeStreetVentures() {
             </div>
           </div>
         </div>
-        <div style={{ position: "absolute", bottom: 40, right: 40, display: "flex", flexDirection: "column", alignItems: "center", gap: 8, ...fi(1.2) }}>
+        <div style={{ position: "absolute", bottom: 40, right: 40, display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
           <div style={{ fontFamily: T.mono, fontSize: 9, letterSpacing: "0.2em", color: T.cream, writingMode: "vertical-rl" }}>SCROLL</div>
           <div style={{ width: 1, height: 48, background: `linear-gradient(to bottom,${T.cream},transparent)` }} />
         </div>
@@ -174,8 +211,15 @@ export default function DukeStreetVentures() {
       <section id="about" style={{ background: T.cream }}>
         <div className="tc" style={{ maxWidth: 1320, margin: "0 auto", padding: "120px 40px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 80, alignItems: "center" }}>
           <div>
-            <Reveal><div style={{ fontFamily: T.mono, fontSize: 10, letterSpacing: "0.25em", color: T.mid, textTransform: "uppercase", marginBottom: 24 }}>00 · About</div><h2 style={{ fontFamily: T.serif, fontSize: "clamp(36px,4vw,60px)", fontWeight: 300, lineHeight: 1.12, color: T.ink, marginBottom: 40 }}>Innovation Moves Quickly.{" "}<em style={{ fontStyle: "italic" }}>Capital Should Not.</em></h2></Reveal>
-            <Reveal delay={0.12}><p style={{ fontFamily: T.sans, fontSize: 16, lineHeight: 1.8, color: "#3a3a3a", marginBottom: 20 }}>Duke Street Ventures applies time-tested investment structures to emerging technology platforms. We believe durable enterprise value is built through governance, alignment, and disciplined capital allocation.</p><p style={{ fontFamily: T.sans, fontSize: 16, lineHeight: 1.8, color: "#3a3a3a", marginBottom: 20 }}>While technology evolves rapidly, our approach remains consistent: structured equity participation, institutional oversight, and engineered liquidity pathways.</p><p style={{ fontFamily: T.sans, fontSize: 16, lineHeight: 1.8, color: "#3a3a3a" }}>We invest in software and hardware platforms positioned at the intersection of artificial intelligence, robotics, automation, and high-value industrial systems.</p></Reveal>
+            <Reveal>
+              <div style={{ fontFamily: T.mono, fontSize: 10, letterSpacing: "0.25em", color: T.mid, textTransform: "uppercase", marginBottom: 24 }}>00 · About</div>
+              <h2 style={{ fontFamily: T.serif, fontSize: "clamp(36px,4vw,60px)", fontWeight: 300, lineHeight: 1.12, color: T.ink, marginBottom: 40 }}>Innovation Moves Quickly.{" "}<em style={{ fontStyle: "italic" }}>Capital Should Not.</em></h2>
+            </Reveal>
+            <Reveal delay={0.12}>
+              <p style={{ fontFamily: T.sans, fontSize: 16, lineHeight: 1.8, color: "#3a3a3a", marginBottom: 20 }}>Duke Street Ventures applies time-tested investment structures to emerging technology platforms. We believe durable enterprise value is built through governance, alignment, and disciplined capital allocation.</p>
+              <p style={{ fontFamily: T.sans, fontSize: 16, lineHeight: 1.8, color: "#3a3a3a", marginBottom: 20 }}>While technology evolves rapidly, our approach remains consistent: structured equity participation, institutional oversight, and engineered liquidity pathways.</p>
+              <p style={{ fontFamily: T.sans, fontSize: 16, lineHeight: 1.8, color: "#3a3a3a" }}>We invest in software and hardware platforms positioned at the intersection of artificial intelligence, robotics, automation, and high-value industrial systems.</p>
+            </Reveal>
           </div>
           <Reveal delay={0.2}><IndustrialPhoto variant={2} style={{ width: "100%", aspectRatio: "4/5" }} /></Reveal>
         </div>
@@ -184,7 +228,10 @@ export default function DukeStreetVentures() {
       {/* FOCUS */}
       <section id="focus" style={{ background: "#fff", borderTop: `1px solid ${T.border}` }}>
         <div style={{ maxWidth: 1320, margin: "0 auto", padding: "120px 40px" }}>
-          <Reveal><div style={{ fontFamily: T.mono, fontSize: 10, letterSpacing: "0.25em", color: T.mid, textTransform: "uppercase", marginBottom: 24 }}>01 · Investment Focus</div><h2 style={{ fontFamily: T.serif, fontSize: "clamp(36px,4vw,60px)", fontWeight: 300, lineHeight: 1.1, color: T.ink, marginBottom: 72, maxWidth: 640 }}>Four Converging Platforms</h2></Reveal>
+          <Reveal>
+            <div style={{ fontFamily: T.mono, fontSize: 10, letterSpacing: "0.25em", color: T.mid, textTransform: "uppercase", marginBottom: 24 }}>01 · Investment Focus</div>
+            <h2 style={{ fontFamily: T.serif, fontSize: "clamp(36px,4vw,60px)", fontWeight: 300, lineHeight: 1.1, color: T.ink, marginBottom: 72, maxWidth: 640 }}>Four Converging Platforms</h2>
+          </Reveal>
           <div className="g4" style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 1, background: T.border }}>
             {([{n:"01",title:"Artificial Intelligence Infrastructure",body:"Enterprise-grade decision systems, applied AI engines, and scalable automation platforms.",photo:0},{n:"02",title:"Robotics & Autonomous Systems",body:"Industrial robotics, AI-controlled machinery, and intelligent automation frameworks.",photo:1},{n:"03",title:"Drone Technology Platforms",body:"Advanced aerial systems supporting logistics, inspection, surveillance, and infrastructure monitoring.",photo:3},{n:"04",title:"High-Value Equipment Platforms",body:"Asset-backed industrial systems integrating software intelligence with physical infrastructure.",photo:2}] as const).map((item, i) => (
               <Reveal key={item.n} delay={i * 0.08}>
@@ -210,7 +257,10 @@ export default function DukeStreetVentures() {
         <IndustrialPhoto variant={0} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", opacity: 0.4 }} />
         <div style={{ position: "absolute", inset: 0, background: "rgba(14,14,14,0.75)" }} />
         <div style={{ position: "relative", zIndex: 2, maxWidth: 1320, margin: "0 auto", padding: "120px 40px" }}>
-          <Reveal><div style={{ fontFamily: T.mono, fontSize: 10, letterSpacing: "0.25em", color: "rgba(245,242,236,0.35)", textTransform: "uppercase", marginBottom: 24 }}>02 · Track Record</div><h2 style={{ fontFamily: T.serif, fontSize: "clamp(36px,4vw,60px)", fontWeight: 300, color: T.cream, marginBottom: 80 }}>Structured Platforms.{" "}<em style={{ fontStyle: "italic" }}>Institutional Outcomes.</em></h2></Reveal>
+          <Reveal>
+            <div style={{ fontFamily: T.mono, fontSize: 10, letterSpacing: "0.25em", color: "rgba(245,242,236,0.35)", textTransform: "uppercase", marginBottom: 24 }}>02 · Track Record</div>
+            <h2 style={{ fontFamily: T.serif, fontSize: "clamp(36px,4vw,60px)", fontWeight: 300, color: T.cream, marginBottom: 80 }}>Structured Platforms.{" "}<em style={{ fontStyle: "italic" }}>Institutional Outcomes.</em></h2>
+          </Reveal>
           {([{name:"Magnus AI",role:"Founding Capital Partner",desc:"Founding capital partner and structural architect of AI decision infrastructure.",year:"2021"},{name:"NB Tech Acquisitions",role:"Consolidation Platform",desc:"Consolidation platform of code-based intellectual property. Achieved Nasdaq public market exit via Night Owl merger.",year:"2020"},{name:"Fundraising.com",role:"Capital Markets Architecture",desc:"Structured OTC Markets listing enabling public capital access and digital investor infrastructure.",year:"2022"},{name:"Newport ECOM Brands",role:"Commerce Platform",desc:"Creation and capitalization of scalable commerce platform holdings.",year:"2023"}] as const).map((item, i) => (
             <Reveal key={item.name} delay={i * 0.1}>
               <div style={{ display: "grid", gridTemplateColumns: "120px 1fr auto", gap: 40, padding: "40px 0", borderBottom: "1px solid rgba(245,242,236,0.07)", alignItems: "start", transition: "padding-left 0.3s" }}
@@ -218,7 +268,11 @@ export default function DukeStreetVentures() {
                 onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.paddingLeft = "0"; }}
               >
                 <div style={{ fontFamily: T.mono, fontSize: 11, color: "rgba(245,242,236,0.3)", letterSpacing: "0.1em", paddingTop: 4 }}>{item.year}</div>
-                <div><div style={{ fontFamily: T.serif, fontSize: 28, fontWeight: 400, color: T.cream, marginBottom: 8 }}>{item.name}</div><div style={{ fontFamily: T.mono, fontSize: 10, letterSpacing: "0.15em", color: "rgba(245,242,236,0.4)", textTransform: "uppercase", marginBottom: 14 }}>{item.role}</div><p style={{ fontFamily: T.sans, fontSize: 14, color: "rgba(245,242,236,0.55)", lineHeight: 1.7, maxWidth: 560 }}>{item.desc}</p></div>
+                <div>
+                  <div style={{ fontFamily: T.serif, fontSize: 28, fontWeight: 400, color: T.cream, marginBottom: 8 }}>{item.name}</div>
+                  <div style={{ fontFamily: T.mono, fontSize: 10, letterSpacing: "0.15em", color: "rgba(245,242,236,0.4)", textTransform: "uppercase", marginBottom: 14 }}>{item.role}</div>
+                  <p style={{ fontFamily: T.sans, fontSize: 14, color: "rgba(245,242,236,0.55)", lineHeight: 1.7, maxWidth: 560 }}>{item.desc}</p>
+                </div>
                 <div style={{ fontFamily: T.mono, fontSize: 12, color: "rgba(245,242,236,0.2)", alignSelf: "center" }}>↗</div>
               </div>
             </Reveal>
@@ -231,8 +285,13 @@ export default function DukeStreetVentures() {
         <IndustrialPhoto variant={1} style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
         <div style={{ position: "absolute", inset: 0, background: "linear-gradient(105deg,rgba(14,14,14,0.88) 0%,rgba(14,14,14,0.55) 60%,rgba(14,14,14,0.2) 100%)" }} />
         <div style={{ position: "relative", zIndex: 2, maxWidth: 800, margin: "0 auto", padding: "120px 40px" }}>
-          <Reveal><div style={{ fontFamily: T.mono, fontSize: 10, letterSpacing: "0.25em", color: "rgba(245,242,236,0.35)", textTransform: "uppercase", marginBottom: 32 }}>03 · Capital Philosophy</div><h2 style={{ fontFamily: T.serif, fontSize: "clamp(40px,5.5vw,80px)", fontWeight: 300, lineHeight: 1.08, color: T.cream, marginBottom: 36 }}>Software Is Becoming{" "}<em style={{ fontStyle: "italic" }}>Physical.</em></h2></Reveal>
-          <Reveal delay={0.15}><p style={{ fontFamily: T.sans, fontSize: 18, lineHeight: 1.75, color: "rgba(245,242,236,0.65)", maxWidth: 600 }}>Artificial intelligence is moving beyond digital systems into robotics, drones, and industrial equipment. Duke Street Ventures structures capital to support that convergence responsibly.</p></Reveal>
+          <Reveal>
+            <div style={{ fontFamily: T.mono, fontSize: 10, letterSpacing: "0.25em", color: "rgba(245,242,236,0.35)", textTransform: "uppercase", marginBottom: 32 }}>03 · Capital Philosophy</div>
+            <h2 style={{ fontFamily: T.serif, fontSize: "clamp(40px,5.5vw,80px)", fontWeight: 300, lineHeight: 1.08, color: T.cream, marginBottom: 36 }}>Software Is Becoming{" "}<em style={{ fontStyle: "italic" }}>Physical.</em></h2>
+          </Reveal>
+          <Reveal delay={0.15}>
+            <p style={{ fontFamily: T.sans, fontSize: 18, lineHeight: 1.75, color: "rgba(245,242,236,0.65)", maxWidth: 600 }}>Artificial intelligence is moving beyond digital systems into robotics, drones, and industrial equipment. Duke Street Ventures structures capital to support that convergence responsibly.</p>
+          </Reveal>
         </div>
       </section>
 
@@ -241,12 +300,17 @@ export default function DukeStreetVentures() {
         <div className="tc" style={{ maxWidth: 1320, margin: "0 auto", padding: "120px 40px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 80, alignItems: "center" }}>
           <Reveal><IndustrialPhoto variant={3} style={{ width: "100%", aspectRatio: "4/3" }} /></Reveal>
           <div>
-            <Reveal delay={0.1}><div style={{ fontFamily: T.mono, fontSize: 10, letterSpacing: "0.25em", color: T.mid, textTransform: "uppercase", marginBottom: 24 }}>04 · Investor Relations</div><h2 style={{ fontFamily: T.serif, fontSize: "clamp(36px,4vw,56px)", fontWeight: 300, lineHeight: 1.12, color: T.ink, marginBottom: 32 }}>Institutional Partners</h2></Reveal>
+            <Reveal delay={0.1}>
+              <div style={{ fontFamily: T.mono, fontSize: 10, letterSpacing: "0.25em", color: T.mid, textTransform: "uppercase", marginBottom: 24 }}>04 · Investor Relations</div>
+              <h2 style={{ fontFamily: T.serif, fontSize: "clamp(36px,4vw,56px)", fontWeight: 300, lineHeight: 1.12, color: T.ink, marginBottom: 32 }}>Institutional Partners</h2>
+            </Reveal>
             <Reveal delay={0.2}>
               <p style={{ fontFamily: T.sans, fontSize: 16, lineHeight: 1.8, color: "#3a3a3a", marginBottom: 40 }}>Duke Street Ventures partners with qualified investors, family offices, and institutional allocators seeking disciplined exposure to advanced technology platforms within traditional capital frameworks.</p>
               <div style={{ borderTop: `1px solid ${T.border}` }}>
                 {["Qualified Institutional Buyers","Registered Investment Advisors","Family Offices","High-Net-Worth Accredited Investors"].map((label) => (
-                  <div key={label} style={{ padding: "18px 0", borderBottom: `1px solid ${T.border}`, display: "flex", justifyContent: "space-between", fontFamily: T.sans, fontSize: 14, color: T.ink }}><span>{label}</span><span style={{ color: T.mid }}>→</span></div>
+                  <div key={label} style={{ padding: "18px 0", borderBottom: `1px solid ${T.border}`, display: "flex", justifyContent: "space-between", fontFamily: T.sans, fontSize: 14, color: T.ink }}>
+                    <span>{label}</span><span style={{ color: T.mid }}>→</span>
+                  </div>
                 ))}
               </div>
             </Reveal>
@@ -259,18 +323,26 @@ export default function DukeStreetVentures() {
         <IndustrialPhoto variant={4} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", opacity: 0.3 }} />
         <div style={{ position: "absolute", inset: 0, background: "rgba(14,14,14,0.82)" }} />
         <div style={{ position: "relative", zIndex: 2, maxWidth: 1320, margin: "0 auto", padding: "140px 40px", textAlign: "center" }}>
-          <Reveal><div style={{ fontFamily: T.mono, fontSize: 10, letterSpacing: "0.25em", color: "rgba(245,242,236,0.3)", textTransform: "uppercase", marginBottom: 32 }}>05 · Contact</div><h2 style={{ fontFamily: T.serif, fontSize: "clamp(36px,5vw,72px)", fontWeight: 300, lineHeight: 1.1, color: T.cream, marginBottom: 48 }}>The Next Industrial Era Requires{" "}<em style={{ fontStyle: "italic" }}>Intelligent Capital.</em></h2></Reveal>
-          <Reveal delay={0.15}><a href="mailto:investors@dukestreetventures.com" style={{ display: "inline-block", fontFamily: T.mono, fontSize: 16, letterSpacing: "0.1em", color: T.cream, textDecoration: "none", borderBottom: "1px solid rgba(245,242,236,0.3)", paddingBottom: 4, transition: "border-color 0.3s" }}
-            onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.borderColor = "#fff"; }}
-            onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.borderColor = "rgba(245,242,236,0.3)"; }}
-          >investors@dukestreetventures.com</a></Reveal>
+          <Reveal>
+            <div style={{ fontFamily: T.mono, fontSize: 10, letterSpacing: "0.25em", color: "rgba(245,242,236,0.3)", textTransform: "uppercase", marginBottom: 32 }}>05 · Contact</div>
+            <h2 style={{ fontFamily: T.serif, fontSize: "clamp(36px,5vw,72px)", fontWeight: 300, lineHeight: 1.1, color: T.cream, marginBottom: 48 }}>The Next Industrial Era Requires{" "}<em style={{ fontStyle: "italic" }}>Intelligent Capital.</em></h2>
+          </Reveal>
+          <Reveal delay={0.15}>
+            <a href="mailto:investors@dukestreetventures.com" style={{ display: "inline-block", fontFamily: T.mono, fontSize: 16, letterSpacing: "0.1em", color: T.cream, textDecoration: "none", borderBottom: "1px solid rgba(245,242,236,0.3)", paddingBottom: 4, transition: "border-color 0.3s" }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.borderColor = "#fff"; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.borderColor = "rgba(245,242,236,0.3)"; }}
+            >investors@dukestreetventures.com</a>
+          </Reveal>
         </div>
       </section>
 
       {/* FOOTER */}
       <footer style={{ background: "#060606", borderTop: "1px solid rgba(255,255,255,0.04)", padding: "60px 40px" }}>
         <div className="tc" style={{ maxWidth: 1320, margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 2fr", gap: 80 }}>
-          <div><div style={{ fontFamily: T.serif, fontSize: 13, letterSpacing: "0.28em", color: "rgba(245,242,236,0.6)", marginBottom: 10 }}>DUKE STREET VENTURES</div><div style={{ fontFamily: T.mono, fontSize: 11, color: "rgba(245,242,236,0.25)", letterSpacing: "0.1em" }}>Greenwich, Connecticut</div></div>
+          <div>
+            <div style={{ fontFamily: T.serif, fontSize: 13, letterSpacing: "0.28em", color: "rgba(245,242,236,0.6)", marginBottom: 10 }}>DUKE STREET VENTURES</div>
+            <div style={{ fontFamily: T.mono, fontSize: 11, color: "rgba(245,242,236,0.25)", letterSpacing: "0.1em" }}>Greenwich, Connecticut</div>
+          </div>
           <p style={{ fontFamily: T.sans, fontSize: 12, lineHeight: 1.8, color: "rgba(245,242,236,0.2)" }}>Duke Street Ventures is a private investment partnership. Investments involve risk and are available only to qualified investors in accordance with applicable securities regulations. Past performance is not indicative of future results. Nothing on this page constitutes an offer to sell or a solicitation to buy securities.</p>
         </div>
         <div style={{ maxWidth: 1320, margin: "40px auto 0", paddingTop: 32, borderTop: "1px solid rgba(255,255,255,0.04)", display: "flex", justifyContent: "space-between", fontFamily: T.mono, fontSize: 10, letterSpacing: "0.15em", color: "rgba(245,242,236,0.15)" }}>
